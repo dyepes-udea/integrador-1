@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  sgidis-backend:
+    image: sgidis-backend
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 80
+    volumes:
+      - ../:/usr/src/app
+    ports:
+      - 8000:80
+    environment:
+      - VERSION=0.0.1
+      - TITLE=SGIDIS backend
+      - DESCRIPTION=
+      - ENVIRONMENT=dev
+      - POSTGRESQL=postgresql://postgres:postgres@sgidis-db/sgidis
+    depends_on:
+      - sgidis-db
+
+  sgidis-db:
+    image: sgidis-db
+    build:
+      context: ../db
+      dockerfile: Dockerfile
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
